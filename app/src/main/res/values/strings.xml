@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">TareasV01</string>
+    <string name="descripcion">descripcion</string>
+    <string name="tecnico">Técnico</string>
+    <string name="valoracion_cliente">Valoración Cliente</string>
+    <string name="pagado">Está pagado</string>
+    <string name="estado_de_la_tarea">Estado de la tarea</string>
+    <string name="prioridad">prioridad</string>
+    <string name="categorias">categorias</string>
+    <string-array name="estado_tarea">
+        <item>Abierta</item>
+        <item>En Curso</item>
+        <item>Cerrada</item>
+    </string-array>
+    <string-array name="categoria">
+        <item>Reparacion</item>
+        <item>Instalacion</item>
+        <item>Mantenimiento</item>
+        <item>Comercial</item>
+        <item>Otros</item>
+    </string-array>
+    <string-array name="prioridad">
+        <item>Baja</item>
+        <item>Media</item>
+        <item>Alta</item>
+    </string-array>
 </resources>
