@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 @Composable
 fun BasicRadioButton(
-    selectedOption: MutableState<String>,
+    selectedOption: String,
     onOptionSelected: (String) -> Unit,
     options: Array<String>
 ) {
@@ -22,7 +22,7 @@ fun BasicRadioButton(
                 modifier = Modifier.padding(horizontal = 8.dp)
             ) {
                 RadioButton(
-                    selected = selectedOption.value == option,
+                    selected = selectedOption == option,
                     onClick = { onOptionSelected(option) }
                 )
                 Text(text = option)

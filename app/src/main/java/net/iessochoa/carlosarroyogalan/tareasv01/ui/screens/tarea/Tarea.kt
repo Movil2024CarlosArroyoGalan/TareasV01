@@ -48,13 +48,9 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
 @Composable
 fun TareaScreen(
    viewModel: TareaViewModel = viewModel(),
-   modifier: Modifier = Modifier
 ) {
     val uiStateTarea by viewModel.uiStateTarea.collectAsState()
     var categoriaSeleccionada by remember {
-        mutableStateOf("")
-    }
-    var prioridadSeleccionada by remember {
         mutableStateOf("")
     }
     var isPagado by remember {
@@ -74,9 +70,9 @@ fun TareaScreen(
     }
     val context = LocalContext.current
     val estadosTarea = context.resources.getStringArray(R.array.estado_tarea)
-    val categorias = context.resources.getStringArray(R.array.categoria)
 
     /*
+        val categorias = context.resources.getStringArray(R.array.categoria)
         val prioridades = context.resources.getStringArray(R.array.prioridad)
 
     val colorFondo = if (prioridadSeleccionada == prioridades[2]) ColorPrioridadAlta else Color.Transparent
@@ -100,10 +96,10 @@ fun TareaScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         DynamicSelectTextField (
-                            selectedValue = categoriaSeleccionada,
-                            options = categorias,
+                            selectedValue = uiStateTarea.categoria,
+                            options = viewModel.listaCategory,
                             label = stringResource(R.string.categorias),
-                            onSelectionChanged = { categoriaSeleccionada = it }
+                            onSelectionChanged = { viewModel.onValueChangeCategoria(it) }
                         )
                         DynamicSelectTextField (
                             selectedValue = uiStateTarea.prioridad,
@@ -124,19 +120,20 @@ fun TareaScreen(
                     )
                 }
                 Row(modifier = Modifier.padding(8.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(painter = if (isPagado) painterResource(R.drawable.ic_pagado) else painterResource(R.drawable.ic_no_pagado), contentDescription = null)
+                    Icon(painter = if (uiStateTarea.pagado) painterResource(R.drawable.ic_pagado)
+                    else painterResource(R.drawable.ic_no_pagado), contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(stringResource(R.string.pagado))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Switch(checked = isPagado, onCheckedChange = { isPagado = it })
-
+                    Switch(checked = uiStateTarea.pagado,
+                        onCheckedChange = { viewModel.onValueChangePagado(it) })
                 }
 
                 Row(modifier = Modifier.padding(8.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(R.string.estado_de_la_tarea))
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    estadoTarea.value.let { estado ->
+                    uiStateTarea.estado.let { estado ->
                         val iconId = when (estado) {
                             "Abierta" -> R.drawable.ic_abierta
                             "En curso" -> R.drawable.ic_en_curso
@@ -151,14 +148,14 @@ fun TareaScreen(
                         }
                     }
                 }
-                BasicRadioButton(selectedOption = estadoTarea, onOptionSelected = { estadoTarea.value = it }, options = estadosTarea)
+                BasicRadioButton(selectedOption = uiStateTarea.estado, onOptionSelected = { viewModel.onValueChangeEstado(it) }, options = viewModel.listaEstados)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(R.string.valoracion_cliente))
-                    RatingBar (valoracionCliente, onRatingChanged = { valoracionCliente = it })
+                    RatingBar (uiStateTarea.valoracion, onRatingChanged = { viewModel.onValueChangeValoracion(it)})
                 }
                 OutlinedTextField(
-                    value = tecnico,
-                    onValueChange = { tecnico = it },
+                    value = uiStateTarea.tecnico,
+                    onValueChange = {viewModel.onValueChangeTecnico(it)},
                     label = { Text(stringResource(R.string.tecnico)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -168,8 +165,8 @@ fun TareaScreen(
                     .fillMaxWidth()
                     .weight(1f)) {
                     OutlinedTextField(
-                        value = descripcion,
-                        onValueChange = { descripcion = it },
+                        value = uiStateTarea.descripcion,
+                        onValueChange = { viewModel.onValueChangeDescripcion(it)},
                         label = { Text(stringResource(R.string.descripcion)) },
                         modifier = Modifier
                             .fillMaxWidth()
