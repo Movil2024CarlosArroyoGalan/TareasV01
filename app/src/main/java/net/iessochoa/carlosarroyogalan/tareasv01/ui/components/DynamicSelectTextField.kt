@@ -14,9 +14,10 @@ import androidx.compose.ui.Modifier
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DynamicSelectTextField(
+    selectedValue: String,
     options: Array<String>,
     label: String,
-    onSelectionChanged: (String) -> Unit
+    onSelectionChanged: (String) -> Unit,
 ) {
     val expanded = remember { mutableStateOf(false) }
     val selectedOption = remember { mutableStateOf(options.firstOrNull() ?: "") }

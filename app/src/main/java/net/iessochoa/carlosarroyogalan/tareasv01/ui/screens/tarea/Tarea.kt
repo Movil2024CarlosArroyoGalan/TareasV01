@@ -17,10 +17,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -37,16 +37,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.BasicRadioButton
-import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.ColorPrioridadAlta
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DynamicSelectTextField
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.RatingBar
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
 
 
 @Composable
-fun TareaScreen() {
+fun TareaScreen(
+   viewModel: TareaViewModel = viewModel(),
+   modifier: Modifier = Modifier
+) {
+    val uiStateTarea by viewModel.uiStateTarea.collectAsState()
     var categoriaSeleccionada by remember {
         mutableStateOf("")
     }
@@ -69,17 +73,22 @@ fun TareaScreen() {
         mutableStateOf("")
     }
     val context = LocalContext.current
-    val categorias = context.resources.getStringArray(R.array.categoria)
-    val prioridades = context.resources.getStringArray(R.array.prioridad)
     val estadosTarea = context.resources.getStringArray(R.array.estado_tarea)
+    val categorias = context.resources.getStringArray(R.array.categoria)
+
+    /*
+        val prioridades = context.resources.getStringArray(R.array.prioridad)
+
     val colorFondo = if (prioridadSeleccionada == prioridades[2]) ColorPrioridadAlta else Color.Transparent
-    Scaffold(
-        containerColor = colorFondo,
-        content = { innerPadding ->
+    *
+     */
+    Surface(
+        color = uiStateTarea.colorFondo,
+        content = {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
+                    .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
             ) {
                 Row(
@@ -90,8 +99,18 @@ fun TareaScreen() {
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        DynamicSelectTextField (categorias, stringResource(R.string.categorias), onSelectionChanged = { categoriaSeleccionada = it })
-                        DynamicSelectTextField (prioridades, stringResource(R.string.prioridad) , onSelectionChanged = { prioridadSeleccionada = it })
+                        DynamicSelectTextField (
+                            selectedValue = categoriaSeleccionada,
+                            options = categorias,
+                            label = stringResource(R.string.categorias),
+                            onSelectionChanged = { categoriaSeleccionada = it }
+                        )
+                        DynamicSelectTextField (
+                            selectedValue = uiStateTarea.prioridad,
+                            options = viewModel.listaPrioridad,
+                            label = stringResource(R.string.prioridad),
+                            onSelectionChanged = { viewModel.onValueChangePrioridad(it) }
+                        )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Image(
@@ -163,6 +182,7 @@ fun TareaScreen() {
         }
     )
 }
+
 @Preview(showBackground = true)
 @Composable
 fun TareaScreenPreview() {
