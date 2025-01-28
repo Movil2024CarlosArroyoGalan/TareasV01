@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TareasV01Theme {
+            TareasV01Theme  {
                 TareaScreen()
             }
         }

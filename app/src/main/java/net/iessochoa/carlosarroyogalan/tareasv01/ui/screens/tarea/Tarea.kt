@@ -17,21 +17,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -49,7 +45,9 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
 fun TareaScreen(
    viewModel: TareaViewModel = viewModel(),
 ) {
+
     val uiStateTarea by viewModel.uiStateTarea.collectAsState()
+    /*
     var categoriaSeleccionada by remember {
         mutableStateOf("")
     }
@@ -71,16 +69,20 @@ fun TareaScreen(
     val context = LocalContext.current
     val estadosTarea = context.resources.getStringArray(R.array.estado_tarea)
 
-    /*
+
         val categorias = context.resources.getStringArray(R.array.categoria)
         val prioridades = context.resources.getStringArray(R.array.prioridad)
 
     val colorFondo = if (prioridadSeleccionada == prioridades[2]) ColorPrioridadAlta else Color.Transparent
     *
      */
-    Surface(
-        color = uiStateTarea.colorFondo,
-        content = {
+    Scaffold (
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
+        Surface(
+            modifier = Modifier.padding(innerPadding),
+            color = uiStateTarea.colorFondo
+        ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -128,11 +130,9 @@ fun TareaScreen(
                     Switch(checked = uiStateTarea.pagado,
                         onCheckedChange = { viewModel.onValueChangePagado(it) })
                 }
-
                 Row(modifier = Modifier.padding(8.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(R.string.estado_de_la_tarea))
                     Spacer(modifier = Modifier.width(8.dp))
-
                     uiStateTarea.estado.let { estado ->
                         val iconId = when (estado) {
                             "Abierta" -> R.drawable.ic_abierta
@@ -155,7 +155,7 @@ fun TareaScreen(
                 }
                 OutlinedTextField(
                     value = uiStateTarea.tecnico,
-                    onValueChange = {viewModel.onValueChangeTecnico(it)},
+                    onValueChange = { viewModel.onValueChangeTecnico(it)},
                     label = { Text(stringResource(R.string.tecnico)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
@@ -177,8 +177,9 @@ fun TareaScreen(
                 }
             }
         }
-    )
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable
