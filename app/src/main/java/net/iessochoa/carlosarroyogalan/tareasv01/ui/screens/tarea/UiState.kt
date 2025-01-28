@@ -19,6 +19,7 @@ val tecnico: String = "",
 val descripcion: String = "",
 val colorFondo: Color = Color.Transparent,
     val esFormularioValido: Boolean = false,
-    val mostrarDialogo: Boolean = false
+    val mostrarDialogo: Boolean = false,
+    val esTareaNueva: Boolean = true
 )
 

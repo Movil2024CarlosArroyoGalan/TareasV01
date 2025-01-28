@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import net.iessochoa.carlosarroyogalan.tareasv01.R
+import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
+import net.iessochoa.carlosarroyogalan.tareasv01.data.repository.Repository
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.ColorPrioridadAlta
 
 class TareaViewModel(application: Application): AndroidViewModel(application) {
@@ -15,6 +17,7 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
     val listaCategory = context.resources.getStringArray(R.array.categoria)
     val listaEstados = context.resources.getStringArray(R.array.estado_tarea)
     private val PRIORIDAD_ALTA = listaPrioridad[2]
+    var tarea: Tarea? = null
 
     private val _uiStateTarea = MutableStateFlow(
         UiStateTarea(
@@ -75,5 +78,60 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
             mostrarDialogo = false
         )
     }
+    /**
+     *Carga los datos de la tarea en UiState,
+     * que a su vez actualiza la interfaz de usuario *
+     */
+    fun tareaToUiState(tarea: Tarea) {
+        _uiStateTarea.value = _uiStateTarea.value.copy(
+            categoria = listaCategory[tarea.categoria],
+            prioridad = listaPrioridad[tarea.prioridad],
+            pagado = tarea.pagado,
+            estado = listaEstados[tarea.estado],
+            valoracion = tarea.valoracionCliente,
+            tecnico = tarea.tecnico,
+            descripcion = tarea.descripcion,
+            esFormularioValido = tarea.tecnico.isNotBlank() &&
+                    tarea.descripcion.isNotBlank(),
+            esTareaNueva = false,
+            colorFondo = if (PRIORIDAD_ALTA == listaPrioridad[tarea.prioridad])
+                ColorPrioridadAlta else Color.Transparent
+        )
+    }
+    fun uiStateToTarea(): Tarea {
+        return if (uiStateTarea.value.esTareaNueva)
+        //si es nueva, le asigna un id
+            Tarea(
+                categoria = listaCategory.indexOf(uiStateTarea.value.categoria),
+                prioridad = listaPrioridad.indexOf(uiStateTarea.value.prioridad),
+                img = R.drawable.foto3.toString(),
+                pagado = uiStateTarea.value.pagado,
+                estado = listaEstados.indexOf(uiStateTarea.value.estado),
+                valoracionCliente = uiStateTarea.value.valoracion,
+                tecnico = uiStateTarea.value.tecnico,
+                descripcion = uiStateTarea.value.descripcion
+            ) //si no es nueva, actualiza la tarea
+        else Tarea(
+            tarea!!.id,
+            categoria = listaCategory.indexOf(uiStateTarea.value.categoria),
+            prioridad = listaPrioridad.indexOf(uiStateTarea.value.prioridad),
+            img = tarea!!.img,
+            pagado = uiStateTarea.value.pagado,
+            estado = listaEstados.indexOf(uiStateTarea.value.estado),
+            valoracionCliente = uiStateTarea.value.valoracion,
+            tecnico = uiStateTarea.value.tecnico,
+            descripcion = uiStateTarea.value.descripcion
+        )
+    }
+    fun getTarea(id: Long) {
+        tarea = Repository.getTarea(id)
+//si no es nueva inicia la UI con los valores de la tarea
+        if (tarea != null) tareaToUiState(tarea!!)
+    }
+
+
+
+
+
 }
 
