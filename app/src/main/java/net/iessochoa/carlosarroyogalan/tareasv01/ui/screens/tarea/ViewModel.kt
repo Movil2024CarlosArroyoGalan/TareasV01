@@ -50,11 +50,30 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
     }
 
     fun onValueChangeTecnico(nuevoTecnico: String) {
-        _uiStateTarea.value = _uiStateTarea.value.copy(tecnico = nuevoTecnico)
+        _uiStateTarea.value = _uiStateTarea.value.copy(
+            tecnico = nuevoTecnico,
+            esFormularioValido = nuevoTecnico.isNotBlank() && _uiStateTarea.value.descripcion.isNotBlank())
     }
 
     fun onValueChangeDescripcion(nuevaDescripcion: String) {
-        _uiStateTarea.value = _uiStateTarea.value.copy(descripcion = nuevaDescripcion)
+        _uiStateTarea.value = _uiStateTarea.value.copy(
+            descripcion = nuevaDescripcion,
+            esFormularioValido = nuevaDescripcion.isNotBlank() && _uiStateTarea.value.tecnico.isNotBlank())
+    }
+    fun onGuardar() {
+        _uiStateTarea.value = _uiStateTarea.value.copy(
+            mostrarDialogo = true
+        )
+    }
+    fun onConfirmarDialogoGuardar() {
+        _uiStateTarea.value = _uiStateTarea.value.copy(
+            mostrarDialogo = false
+        )
+    }
+    fun onCancelarDialogoGuardar() {
+        _uiStateTarea.value = _uiStateTarea.value.copy(
+            mostrarDialogo = false
+        )
     }
 }
 

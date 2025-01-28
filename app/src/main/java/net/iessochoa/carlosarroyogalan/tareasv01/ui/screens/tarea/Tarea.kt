@@ -15,15 +15,24 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,8 +43,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.BasicRadioButton
+import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DialogoDeConfirmacion
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DynamicSelectTextField
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.RatingBar
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
@@ -45,8 +56,9 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
 fun TareaScreen(
    viewModel: TareaViewModel = viewModel(),
 ) {
-
     val uiStateTarea by viewModel.uiStateTarea.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
     /*
     var categoriaSeleccionada by remember {
         mutableStateOf("")
@@ -77,7 +89,27 @@ fun TareaScreen(
     *
      */
     Scaffold (
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        snackbarHost = {SnackbarHost(snackbarHostState)},
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                if(uiStateTarea.esFormularioValido)
+                    viewModel.onGuardar()
+                else{
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            message = "Hay que rellenar todos los campos",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
+            }) {
+                Icon(
+                    painter = painterResource(android.R.drawable.ic_menu_save),
+                    contentDescription = "guardar"
+                )
+            }
+        }
     ) { innerPadding ->
         Surface(
             modifier = Modifier.padding(innerPadding),
@@ -174,6 +206,29 @@ fun TareaScreen(
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                         singleLine = false
                     )
+                }
+                Box(modifier = Modifier){
+                    if (uiStateTarea.mostrarDialogo) {
+                        DialogoDeConfirmacion(
+                            onDismissRequest = {
+                                //cancela el dialogo
+                                viewModel.onCancelarDialogoGuardar()
+                            },
+                            onConfirmation = {
+                                //guardaría los cambios
+                                viewModel.onConfirmarDialogoGuardar()
+                                scope.launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = "Tarea guardada",
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            },
+                            dialogTitle = "Atención",
+                            dialogText = "Desea guardar los cambios?",
+                            icon = Icons.Default.Info
+                        )
+                    }
                 }
             }
         }
