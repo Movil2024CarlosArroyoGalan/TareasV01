@@ -14,6 +14,8 @@
     <string name="tarea_nueva">Nueva Tarea</string>
     <string name="modificar_tarea">Modificar Tarea</string>
     <string name="ver_tarea">Vista de Tarea</string>
+    <string name="lista_tareas"> Lista de Tares></string>
+    <string name="mostrar">mostrar</string>
     <string-array name="estado_tarea">
         <item>Abierta</item>
         <item>En Curso</item>

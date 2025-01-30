@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import net.iessochoa.carlosarroyogalan.tareasv01.data.repository.Repository
+import net.iessochoa.carlosarroyogalan.tareasv01.data.tempmodel.TempModelTareas
 
 class ListaTareasViewModel() : ViewModel() {
 
-    val listaTareasUiState : StateFlow<ListaUiState> =
-        //transformamos el flow de tareas en el Stateflow de ListaUiState
-        Repository.getAllTareas().map {ListaUiState(it)}.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ListaUiState()
-        )
+    val listaTareasUiState = TempModelTareas.getAllTareas().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 }
+
