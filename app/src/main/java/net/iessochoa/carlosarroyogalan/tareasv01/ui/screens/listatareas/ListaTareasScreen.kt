@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
@@ -23,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +43,9 @@ fun ListaTareasScreen(
     onClickVerTarea: (pos: Long?) -> Unit = {}
 ){
     val uiStateTarea by viewModel.listaTareasUiState.collectAsState()
+    val context = LocalContext.current
+    val listaCategorias = context.resources.getStringArray(R.array.categoria).toList()
+    val uiState by viewModel.listaTareasUiState.collectAsState()
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -58,36 +64,18 @@ fun ListaTareasScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+
+        LazyColumn (
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            uiStateTarea.forEach{
-                tarea ->
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(
-                        Icons.Filled.Search,
-                        contentDescription = stringResource(R.string.mostrar),
-                        modifier = Modifier.clickable {
-                            onClickVerTarea(tarea.id)
-                        }
-                            .align(Alignment.CenterVertically)
-                    )
-                    Text(
-                        text = tarea.tecnico,
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                            .clickable {
-                                onClickModificarTarea(tarea.id)
-                            }
-                    )
-                }
-                HorizontalDivider(color = Color.Gray, thickness = 1.dp)
+            items(uiStateTarea) { tarea ->
+                ItemCard(
+                    tarea = tarea,
+                    listaCategorias = listaCategorias,
+                    onItemModificarClick = onClickModificarTarea
+                )
             }
         }
     }
