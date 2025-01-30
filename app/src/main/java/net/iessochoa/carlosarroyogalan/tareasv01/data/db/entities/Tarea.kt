@@ -29,5 +29,4 @@ data class Tarea(
         valoracionCliente:Int,
         tecnico:String,
         descripcion:String):this(generateId(),categoria,prioridad,img,pagado,estado,valoracionCliente, tecnico, descripcion){}
-
 }

@@ -1,13 +1,9 @@
 package net.iessochoa.carlosarroyogalan.tareasv01.ui.screens.tarea
 
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.flow.MutableStateFlow
-import net.iessochoa.carlosarroyogalan.tareasv01.R
-import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.ColorPrioridadAlta
+import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
+import net.iessochoa.carlosarroyogalan.tareasv01.data.tempmodel.TempModelTareas
+
 
 data class UiStateTarea(
 val categoria: String = "",
@@ -20,6 +16,7 @@ val descripcion: String = "",
 val colorFondo: Color = Color.Transparent,
     val esFormularioValido: Boolean = false,
     val mostrarDialogo: Boolean = false,
-    val esTareaNueva: Boolean = true
+    val esTareaNueva: Boolean = true,
+    val listaTareas: ArrayList<Tarea> = TempModelTareas.listaTareas
 )
 

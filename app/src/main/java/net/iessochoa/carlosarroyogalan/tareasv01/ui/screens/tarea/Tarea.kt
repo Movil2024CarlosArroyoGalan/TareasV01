@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -45,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import net.iessochoa.carlosarroyogalan.tareasv01.R
+import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.AppBar
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.BasicRadioButton
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DialogoDeConfirmacion
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DynamicSelectTextField
@@ -55,10 +58,16 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
 @Composable
 fun TareaScreen(
    viewModel: TareaViewModel = viewModel(),
+   idTarea: Long? = null,
+   onVolver: () -> Unit = {},
+   onMostrar: () -> Unit = {}
 ) {
     val uiStateTarea by viewModel.uiStateTarea.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val isTareaNueva = idTarea == null
+    idTarea?.let { viewModel.getTarea(it) }
     /*
     var categoriaSeleccionada by remember {
         mutableStateOf("")
@@ -106,9 +115,20 @@ fun TareaScreen(
             }) {
                 Icon(
                     painter = painterResource(android.R.drawable.ic_menu_save),
-                    contentDescription = "guardar"
+                    contentDescription = stringResource(R.string.guardar)
                 )
             }
+        },
+        topBar ={
+            AppBar(
+                tituloPantallaActual =
+                if (uiStateTarea.esTareaNueva)
+                    stringResource(R.string.tarea_nueva)
+                else
+                    stringResource(R.string.modificar_tarea),
+                puedeNavegarAtras = true,
+                navegaAtras = onVolver
+            )
         }
     ) { innerPadding ->
         Surface(
@@ -219,15 +239,24 @@ fun TareaScreen(
                                 viewModel.onConfirmarDialogoGuardar()
                                 scope.launch {
                                     snackbarHostState.showSnackbar(
-                                        message = "Tarea guardada",
+                                        message = context.getString(R.string.tarea_guardada),
                                         duration = SnackbarDuration.Short
                                     )
                                 }
                             },
-                            dialogTitle = "Atención",
-                            dialogText = "Desea guardar los cambios?",
+                            dialogTitle = stringResource(R.string.atenci_n),
+                            dialogText = stringResource(R.string.desea_guardar_los_cambios),
                             icon = Icons.Default.Info
                         )
+                    }
+                    if (!isTareaNueva){
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Button(
+                            onClick = onMostrar,
+                            enabled = uiStateTarea.listaTareas.isNotEmpty()
+                        ) {
+                            Text(stringResource(R.string.ver_tarea))
+                        }
                     }
                 }
             }

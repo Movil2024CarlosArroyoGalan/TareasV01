@@ -7,6 +7,13 @@
     <string name="estado_de_la_tarea">Estado de la tarea</string>
     <string name="prioridad">prioridad</string>
     <string name="categorias">categorias</string>
+    <string name="tarea_guardada">Tarea guardada</string>
+    <string name="atenci_n">Atención</string>
+    <string name="desea_guardar_los_cambios">Desea guardar los cambios?</string>
+    <string name="guardar">guardar</string>
+    <string name="tarea_nueva">Nueva Tarea</string>
+    <string name="modificar_tarea">Modificar Tarea</string>
+    <string name="ver_tarea">Vista de Tarea</string>
     <string-array name="estado_tarea">
         <item>Abierta</item>
         <item>En Curso</item>
