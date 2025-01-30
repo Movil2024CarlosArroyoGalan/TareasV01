@@ -16,5 +16,11 @@ class ListaTareasViewModel() : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+    //Inicializacion de la lista, sin este nos encontrariamos la lista vacia y no podriamos trabajar con ella
+    init {
+        if (TempModelTareas.listaTareas.isEmpty()) {
+            TempModelTareas.iniciaPruebaTareas()
+        }
+    }
 }
 

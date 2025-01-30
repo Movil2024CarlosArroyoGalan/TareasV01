@@ -17,7 +17,7 @@ object TempModelTareas {
     }
     fun addTarea(tarea: Tarea) {
         val pos = listaTareas.indexOf(tarea)
-        if (pos < 0) {//si no existe
+        if (pos < 0) {
             listaTareas.add(tarea)
         } else {
             listaTareas.set(pos, tarea)
@@ -41,22 +41,21 @@ object TempModelTareas {
             "Zape Gómez",
             "Pepito Grillo"
         )
-        val fotos=
-            listOf(R.drawable.foto1, R.drawable.foto2, R.drawable.foto3, R.drawable.foto4)
+        val fotos= listOf(R.drawable.foto1, R.drawable.foto2, R.drawable.foto3, R.drawable.foto4)
         lateinit var tarea: Tarea
-        (1..10).forEach({
+        (1..10).forEach{
             tarea = Tarea(
-                (0..4).random(),
-                (0..2).random(),
-                fotos.random().toString(),
-                Random.nextBoolean(),
-                (0..2).random(),
-                (0..5).random(),
-                tecnicos.random(),
-                "tarea $it : Lorem \n ipsum dolor sit amet, consectetur adipiscing elit. Mauris consequat ligula et vehicula mattis. \n Etiam tristique ornare lacinia.\nVestibulum lacus magna, dignissim et tempor id, convallis sed augue"
+                categoria = (0..4).random(),
+                prioridad = (0..2).random(),
+                img = fotos.random().toString(),
+                pagado = Random.nextBoolean(),
+                estado = (0..2).random(),
+                valoracionCliente = (0..5).random(),
+                tecnico = tecnicos.random(),
+                descripcion = "tarea $it : Lorem \n ipsum dolor sit amet, consectetur adipiscing elit. Mauris consequat ligula et vehicula mattis. \n Etiam tristique ornare lacinia.\nVestibulum lacus magna, dignissim et tempor id, convallis sed augue"
             )
             listaTareas.add(tarea)
-        })
+        }
         _tareasStateFlow.value = listaTareas
     }
     //Permite iniciar el objeto Singleton

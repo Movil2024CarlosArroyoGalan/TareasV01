@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import net.iessochoa.carlosarroyogalan.tareasv01.ui.navigation.AppNavigation
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.screens.tarea.TareaScreen
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
 
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TareasV01Theme  {
-                TareaScreen()
+                AppNavigation()
             }
         }
     }
