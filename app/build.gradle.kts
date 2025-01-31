@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.jetbrainsKotlinSerialization)
+    //Room que vamos a usar para la base de datos
+    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
 }
 
 android {
@@ -75,6 +77,13 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
 //Serializacion
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json: 1.6.3")
+    //Corrutinas
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core: 1.8.1")
+
+    implementation("androidx.room:room-runtime:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
 
 }
