@@ -21,6 +21,7 @@
     <string name="imagen_de_la_tarea">Imagen de la tarea</string>
     <string name="sin_categor_a">Sin categoría</string>
     <string name="hay_que_rellenar_todos_los_campos">Hay que rellenar todos los campos</string>
+    <string name="expandir_tarjeta">Expandir tarjeta</string>
     <string-array name="estado_tarea">
         <item>Abierta</item>
         <item>En Curso</item>

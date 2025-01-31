@@ -113,7 +113,8 @@ fun ItemCard(
                     if(!expanded){
                         Text(
                             text = tarea.descripcion,
-                            modifier = Modifier.padding(top = 2.dp)
+                            modifier = Modifier
+                                .padding(top = 2.dp)
                                 .weight(1f),
                             style = MaterialTheme.typography.bodySmall,
                             maxLines = 2,
@@ -122,13 +123,14 @@ fun ItemCard(
                     } else {
                         Text(
                             text = tarea.descripcion,
-                            modifier = Modifier.padding(top = 2.dp)
+                            modifier = Modifier
+                                .padding(top = 2.dp)
                                 .weight(1f),
                             style = MaterialTheme.typography.bodySmall,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                    ExpandableCardIcon(
+                    ExpandirItem(
                         expanded = expanded,
                         onIconClick = { expanded = !expanded },
                         modifier = Modifier.align(Alignment.CenterVertically)
@@ -152,7 +154,7 @@ fun ItemCard(
     }
 }
 @Composable
-fun ExpandableCardIcon(
+fun ExpandirItem(
     expanded: Boolean,
     onIconClick: () -> Unit,
     modifier: Modifier
@@ -160,7 +162,7 @@ fun ExpandableCardIcon(
     IconButton(onClick = onIconClick, modifier = modifier) {
         Icon(
             Icons.Filled.KeyboardArrowDown,
-            "Expandir tarjeta",
+            stringResource(R.string.expandir_tarjeta),
             Modifier.rotate(
                 if (expanded)
                     180f
