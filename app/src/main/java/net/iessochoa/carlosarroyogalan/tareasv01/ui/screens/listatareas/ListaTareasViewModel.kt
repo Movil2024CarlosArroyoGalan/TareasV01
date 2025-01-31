@@ -14,7 +14,7 @@ import net.iessochoa.carlosarroyogalan.tareasv01.data.tempmodel.TempModelTareas
 
 class ListaTareasViewModel() : ViewModel() {
 
-    val listaTareasUiState = TempModelTareas.getAllTareas().stateIn(
+    val listaTareasUiState = Repository.getAllTareas().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
