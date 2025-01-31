@@ -105,9 +105,9 @@ fun TareaScreen(
                 if(uiStateTarea.esFormularioValido)
                     viewModel.onGuardar()
                 else{
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = "Hay que rellenar todos los campos",
+                    uiStateTarea.scope.launch {
+                        uiStateTarea.snackbarHostState.showSnackbar(
+                            message = context.getString(R.string.hay_que_rellenar_todos_los_campos),
                             duration = SnackbarDuration.Short
                         )
                     }
@@ -153,7 +153,7 @@ fun TareaScreen(
                             selectedValue = uiStateTarea.categoria,
                             options = viewModel.listaCategory,
                             label = stringResource(R.string.categorias),
-                            onSelectionChanged = { viewModel.onValueChangeCategoria(it) }
+                            onSelectionChanged = { viewModel.onValueChangeCategoria(it) },
                         )
                         DynamicSelectTextField (
                             selectedValue = uiStateTarea.prioridad,
@@ -237,8 +237,8 @@ fun TareaScreen(
                             onConfirmation = {
                                 //guardaría los cambios
                                 viewModel.onConfirmarDialogoGuardar()
-                                scope.launch {
-                                    snackbarHostState.showSnackbar(
+                                uiStateTarea.scope.launch {
+                                    uiStateTarea.snackbarHostState.showSnackbar(
                                         message = context.getString(R.string.tarea_guardada),
                                         duration = SnackbarDuration.Short
                                     )

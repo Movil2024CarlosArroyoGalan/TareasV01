@@ -1,8 +1,10 @@
 package net.iessochoa.carlosarroyogalan.tareasv01.ui.screens.tarea
 
 import android.app.Application
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +25,15 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
         UiStateTarea(
             categoria = listaCategory[0],
             prioridad = listaPrioridad[0],
-            estado = listaEstados[0]
+            estado = listaEstados[0],
+            pagado = false,
+            valoracion = 0,
+            tecnico = "",
+            descripcion = "",
+            esFormularioValido = false,
+            mostrarDialogo = false,
+            snackbarHostState = SnackbarHostState(),
+            scope = viewModelScope
         )
     )
     val uiStateTarea: StateFlow<UiStateTarea> = _uiStateTarea.asStateFlow()
@@ -55,18 +65,19 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
     fun onValueChangeTecnico(nuevoTecnico: String) {
         _uiStateTarea.value = _uiStateTarea.value.copy(
             tecnico = nuevoTecnico,
-            esFormularioValido = nuevoTecnico.isNotBlank() && _uiStateTarea.value.descripcion.isNotBlank())
+            esFormularioValido = nuevoTecnico.isNotBlank() && _uiStateTarea.value.tecnico.isNotBlank())
     }
 
     fun onValueChangeDescripcion(nuevaDescripcion: String) {
         _uiStateTarea.value = _uiStateTarea.value.copy(
             descripcion = nuevaDescripcion,
-            esFormularioValido = nuevaDescripcion.isNotBlank() && _uiStateTarea.value.tecnico.isNotBlank())
+            esFormularioValido = nuevaDescripcion.isNotBlank() && _uiStateTarea.value.descripcion.isNotBlank())
     }
     fun onGuardar() {
         _uiStateTarea.value = _uiStateTarea.value.copy(
             mostrarDialogo = true
         )
+        Repository.addTarea(uiStateToTarea())
     }
     fun onConfirmarDialogoGuardar() {
         _uiStateTarea.value = _uiStateTarea.value.copy(

@@ -10,24 +10,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DynamicSelectTextField(
-    selectedValue: String,
     options: Array<String>,
     label: String,
     onSelectionChanged: (String) -> Unit,
-) {
+    selectedValue: String,
+    modifier: Modifier = Modifier
+    ) {
     val expanded = remember { mutableStateOf(false) }
     val selectedOption = remember { mutableStateOf(options.firstOrNull() ?: "") }
 
     ExposedDropdownMenuBox(
         expanded = expanded.value,
-        onExpandedChange = { expanded.value = !expanded.value }
+        onExpandedChange = { expanded.value = !expanded.value },
+        modifier = modifier
     ) {
         OutlinedTextField(
-            value = selectedOption.value,
+            value = selectedValue,
             onValueChange = {},
             readOnly = true,
             label = { Text(label) },

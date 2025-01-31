@@ -13,16 +13,25 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import net.iessochoa.carlosarroyogalan.tareasv01.R
@@ -32,7 +41,7 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.ColorPrioridadAlta
 @Composable
 fun ItemCard(
     tarea: Tarea,
-    listaCategorias: List<String>,
+    listaCategorias: List<String> = emptyList(),
     onItemModificarClick: (id: Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -41,6 +50,7 @@ fun ItemCard(
     } else {
         Color.Transparent
     }
+    var expanded by remember { mutableStateOf(false)}
     Card (
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
@@ -57,7 +67,7 @@ fun ItemCard(
         ) {
             Image(
                 painter = painterResource(tarea.img.toInt()),
-                contentDescription = "Imagen de la tarea",
+                contentDescription = stringResource(R.string.imagen_de_la_tarea),
                 modifier = Modifier
                     .width(100.dp)
                     .fillMaxHeight(),
@@ -68,7 +78,7 @@ fun ItemCard(
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1f)
-                    .padding(vertical = 8.dp),
+                    .padding(top = 4.dp, bottom = 8.dp, end = 8.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 Row(
@@ -83,12 +93,13 @@ fun ItemCard(
                                 else -> R.drawable.ic_abierta
                             }
                         ),
-                        contentDescription = "Estado de la tarea"
+                        contentDescription = stringResource(R.string.estado_de_la_tarea)
                     )
                     Text(
-                        text = listaCategorias.getOrNull(tarea.categoria) ?: "Sin categoría",
+                        text = listaCategorias.getOrNull(tarea.categoria) ?: stringResource(R.string.sin_categor_a),
                         style = MaterialTheme.typography.labelMedium,
-                        color = Color.Gray
+                        color = Color.Gray,
+                        modifier = Modifier.padding(start = 4.dp)
                     )
                 }
                 Text(
@@ -96,12 +107,33 @@ fun ItemCard(
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.Blue
                 )
-                Text(
-                    text = tarea.descripcion,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+
+                Row(modifier = modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically){
+                    if(!expanded){
+                        Text(
+                            text = tarea.descripcion,
+                            modifier = Modifier.padding(top = 2.dp)
+                                .weight(1f),
+                            style = MaterialTheme.typography.bodySmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        Text(
+                            text = tarea.descripcion,
+                            modifier = Modifier.padding(top = 2.dp)
+                                .weight(1f),
+                            style = MaterialTheme.typography.bodySmall,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    ExpandableCardIcon(
+                        expanded = expanded,
+                        onIconClick = { expanded = !expanded },
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
             }
             Column(
                 modifier = Modifier
@@ -117,5 +149,24 @@ fun ItemCard(
                 )
             }
         }
+    }
+}
+@Composable
+fun ExpandableCardIcon(
+    expanded: Boolean,
+    onIconClick: () -> Unit,
+    modifier: Modifier
+) {
+    IconButton(onClick = onIconClick, modifier = modifier) {
+        Icon(
+            Icons.Filled.KeyboardArrowDown,
+            "Expandir tarjeta",
+            Modifier.rotate(
+                if (expanded)
+                    180f
+                else
+                    360f
+            )
+        )
     }
 }
