@@ -1,5 +1,6 @@
 package net.iessochoa.carlosarroyogalan.tareasv01.ui.screens.listatareas
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,11 +12,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,9 +34,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.AppBar
+import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DialogoDeConfirmacion
 
 @Composable
 fun ListaTareasScreen(
@@ -46,6 +51,7 @@ fun ListaTareasScreen(
     val context = LocalContext.current
     val listaCategorias = context.resources.getStringArray(R.array.categoria).toList()
     val uiState by viewModel.listaTareasUiState.collectAsState()
+    val dialogoState by viewModel.uiStateDialogo.collectAsState()
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -75,9 +81,29 @@ fun ListaTareasScreen(
                 ItemCard(
                     tarea = tarea,
                     listaCategorias = listaCategorias,
-                    onItemModificarClick = onClickModificarTarea
+                    onItemModificarClick = onClickModificarTarea,
+                    onClickBorrar = {viewModel.onMostrarDialogoBorrar(tarea)}
                 )
             }
         }
+    }
+    if (dialogoState.mostrarDialogoBorrar){
+        DialogoDeConfirmacion(
+            onDismissRequest = {
+                viewModel.onCancerlarDialogo()
+            },
+            onConfirmation = {
+                viewModel.onAceptarDialogo()
+                dialogoState.scope?.launch {
+                        dialogoState.snackbarHostState?.showSnackbar(
+                            message = context.getString(R.string.tarea_eliminada),
+                            duration = SnackbarDuration.Short
+                        )
+                } 
+            },
+            dialogTitle = stringResource(R.string.atenci_n),
+            dialogText = stringResource(R.string.desea_guardar_los_cambios),
+            icon = Icons.Default.Info
+        )
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -43,6 +44,7 @@ fun ItemCard(
     tarea: Tarea,
     listaCategorias: List<String> = emptyList(),
     onItemModificarClick: (id: Long) -> Unit,
+    onClickBorrar: (Long) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val cardBackgroundColor = if (tarea.prioridad == 2) {
@@ -143,6 +145,23 @@ fun ItemCard(
                     .padding(4.dp),
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Top
+            ){
+                IconButton(
+                    onClick = {tarea.id?.let {onClickBorrar(it)}}
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.eliminar)
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(4.dp),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Top
             ) {
                 Text(
                     text = tarea.id.toString(),
@@ -162,7 +181,7 @@ fun ExpandirItem(
     IconButton(onClick = onIconClick, modifier = modifier) {
         Icon(
             Icons.Filled.KeyboardArrowDown,
-            stringResource(R.string.expandir_tarjeta),
+            stringResource(R.string.expandir),
             Modifier.rotate(
                 if (expanded)
                     180f
