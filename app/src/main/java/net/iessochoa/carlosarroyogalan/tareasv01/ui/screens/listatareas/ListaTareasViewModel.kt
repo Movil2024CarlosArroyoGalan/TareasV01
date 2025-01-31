@@ -2,10 +2,13 @@ package net.iessochoa.carlosarroyogalan.tareasv01.ui.screens.listatareas
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
 import net.iessochoa.carlosarroyogalan.tareasv01.data.repository.Repository
 import net.iessochoa.carlosarroyogalan.tareasv01.data.tempmodel.TempModelTareas
 
@@ -22,5 +25,11 @@ class ListaTareasViewModel() : ViewModel() {
             TempModelTareas.iniciaPruebaTareas()
         }
     }
+    fun delTarea(tarea: Tarea) {
+        viewModelScope.launch (Dispatchers.IO) {
+            Repository.delTarea(tarea)
+        }
+    }
+
 }
 

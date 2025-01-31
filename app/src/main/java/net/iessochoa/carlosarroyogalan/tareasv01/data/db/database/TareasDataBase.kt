@@ -8,8 +8,7 @@ import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.data.db.dao.TareasDao
 import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
 
-@Database(entities = arrayOf(Tarea::class), version = 1, exportSchema
-= false)
+@Database(entities = [Tarea::class], version = 1, exportSchema = false)
 public abstract class TareasDataBase : RoomDatabase() {
     abstract fun tareasDao(): TareasDao
     companion object {
@@ -24,7 +23,7 @@ public abstract class TareasDataBase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     TareasDataBase::class.java,
-                    context.getString(R.string.tareas_database)
+                    "tareas_database"
                 )
                     .build()
                 INSTANCE = instance
