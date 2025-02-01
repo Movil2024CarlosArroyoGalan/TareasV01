@@ -19,5 +19,7 @@ interface TareasDao {
     fun getTareas(): Flow<List<Tarea>>
     @Query("SELECT * FROM tareas WHERE id = :id")
     suspend fun getTarea(id: Long): Tarea
+    @Query("SELECT * FROM tareas WHERE estado = :estado")
+    fun getTareasByEstado(estado: Int): Flow<List<Tarea>>
 
 }

@@ -38,6 +38,8 @@ import kotlinx.coroutines.launch
 import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.AppBar
+import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.BasicRadioButton
+import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.BasicRadioButtonFilter
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DialogoDeConfirmacion
 
 @Composable
@@ -46,12 +48,13 @@ fun ListaTareasScreen(
     onClickNuevaTarea: () -> Unit = {},
     onClickModificarTarea: (pos: Long?) -> Unit = {},
     onClickVerTarea: (pos: Long?) -> Unit = {}
-){
-    val uiStateTarea by viewModel.listaTareasUiState.collectAsState()
+) {
+    val uiStateTarea by viewModel.uiStatelistaTareas.collectAsState()
     val context = LocalContext.current
     val listaCategorias = context.resources.getStringArray(R.array.categoria).toList()
-    val uiState by viewModel.listaTareasUiState.collectAsState()
+    val uiState by viewModel.uiStatelistaTareas.collectAsState()
     val dialogoState by viewModel.uiStateDialogo.collectAsState()
+    val uiStateFiltro by viewModel._uiStateFiltro.collectAsState()
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -63,7 +66,7 @@ fun ListaTareasScreen(
                 )
             }
         },
-        topBar ={
+        topBar = {
             AppBar(
                 tituloPantallaActual = stringResource(R.string.lista_tareas),
                 puedeNavegarAtras = false,
@@ -71,39 +74,49 @@ fun ListaTareasScreen(
             )
         }
     ) { paddingValues ->
-
-        LazyColumn (
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            items(uiStateTarea) { tarea ->
-                ItemCard(
-                    tarea = tarea,
-                    listaCategorias = listaCategorias,
-                    onItemModificarClick = onClickModificarTarea,
-                    onClickBorrar = {viewModel.onMostrarDialogoBorrar(tarea)}
-                )
+            BasicRadioButtonFilter(
+                selectedOption = uiStateFiltro.filtroEstado,
+                onOptionSelected = {
+                    viewModel.onCheckedChangeFiltroEstado(it)
+                },
+                listaoptions = viewModel.listaFiltroEstado
+            )
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(uiStateTarea.listaPalabra) { tarea ->
+                    ItemCard(
+                        tarea = tarea,
+                        listaCategorias = listaCategorias,
+                        onItemModificarClick = onClickModificarTarea,
+                        onClickBorrar = { viewModel.onMostrarDialogoBorrar(tarea) }
+                    )
+                }
             }
         }
-    }
-    if (dialogoState.mostrarDialogoBorrar){
-        DialogoDeConfirmacion(
-            onDismissRequest = {
-                viewModel.onCancerlarDialogo()
-            },
-            onConfirmation = {
-                viewModel.onAceptarDialogo()
-                dialogoState.scope?.launch {
+        if (dialogoState.mostrarDialogoBorrar) {
+            DialogoDeConfirmacion(
+                onDismissRequest = {
+                    viewModel.onCancerlarDialogo()
+                },
+                onConfirmation = {
+                    viewModel.onAceptarDialogo()
+                    dialogoState.scope?.launch {
                         dialogoState.snackbarHostState?.showSnackbar(
                             message = context.getString(R.string.tarea_eliminada),
                             duration = SnackbarDuration.Short
                         )
-                } 
-            },
-            dialogTitle = stringResource(R.string.atenci_n),
-            dialogText = stringResource(R.string.desea_guardar_los_cambios),
-            icon = Icons.Default.Info
-        )
+                    }
+                },
+                dialogTitle = stringResource(R.string.atenci_n),
+                dialogText = stringResource(R.string.desea_guardar_los_cambios),
+                icon = Icons.Default.Info
+            )
+        }
     }
 }

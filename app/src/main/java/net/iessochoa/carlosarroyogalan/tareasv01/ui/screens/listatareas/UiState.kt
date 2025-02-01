@@ -11,7 +11,11 @@ data class ListaUiState(
 data class UiStateDialogo(
     val mostrarDialogoBorrar: Boolean = false,
     val tareaBorrar: Tarea? = null,
+    //Sin el scope o el snackbar no podriamos emitir el texto del mensaje
     val scope: CoroutineScope? = null,
     val snackbarHostState: SnackbarHostState? = null,
     )
+data class UiStateFiltro(
+    val filtroEstado: String
+)
 

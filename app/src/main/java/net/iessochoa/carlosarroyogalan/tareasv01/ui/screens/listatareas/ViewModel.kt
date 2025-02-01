@@ -1,25 +1,49 @@
 package net.iessochoa.carlosarroyogalan.tareasv01.ui.screens.listatareas
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
 import net.iessochoa.carlosarroyogalan.tareasv01.data.repository.Repository
 import net.iessochoa.carlosarroyogalan.tareasv01.data.tempmodel.TempModelTareas
 
-class ListaTareasViewModel() : ViewModel() {
-    val listaTareasUiState = Repository.getAllTareas().stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
+class ListaTareasViewModel(application: Application): AndroidViewModel(application){
+    private val context = application.applicationContext
+    val listaFiltroEstado =
+        context.resources.getStringArray(R.array.filtro_estado_tarea).toList()
+    val _uiStateFiltro= MutableStateFlow(
+        UiStateFiltro(
+            //por defecto todas las tareas
+            filtroEstado = listaFiltroEstado[3],
+
+            )
     )
+    val uiStatelistaTareas: StateFlow<ListaUiState> = _uiStateFiltro.flatMapLatest {
+            uiStateFiltro ->
+        if (uiStateFiltro.filtroEstado ==listaFiltroEstado[3])//todas
+            Repository.getAllTareas()
+        else
+            Repository.getTareasByEstado(listaFiltroEstado.indexOf(uiStateFiltro.filtroEstado))
+    }.map { listaTareas ->
+        ListaUiState(listaPalabra = listaTareas)
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ListaUiState())
+
+
+
     private val _uiStateDialogo = MutableStateFlow(UiStateDialogo())
     val uiStateDialogo: StateFlow<UiStateDialogo> = _uiStateDialogo.asStateFlow()
     //Inicializacion de la lista, sin este nos encontrariamos la lista vacia y no podriamos trabajar con ella
@@ -47,6 +71,9 @@ class ListaTareasViewModel() : ViewModel() {
     fun onCancerlarDialogo(){
         _uiStateDialogo.value = UiStateDialogo()
     }
-
+    fun onCheckedChangeFiltroEstado(nuevoFiltroEstado: String) {
+        _uiStateFiltro.value=_uiStateFiltro.value.copy(
+            filtroEstado = nuevoFiltroEstado
+        )
+    }
 }
-
