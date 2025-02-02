@@ -19,6 +19,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -55,6 +56,7 @@ fun ListaTareasScreen(
     val uiState by viewModel.uiStatelistaTareas.collectAsState()
     val dialogoState by viewModel.uiStateDialogo.collectAsState()
     val uiStateFiltro by viewModel._uiStateFiltro.collectAsState()
+    val sinPagarState by viewModel.uiStateSinPagar.collectAsState()
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -79,6 +81,16 @@ fun ListaTareasScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            Row (
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Switch(
+                    checked = sinPagarState,
+                    onCheckedChange = {viewModel.onCheckedChangeFiltroSinPagar(it)}
+                )
+                Text(text = stringResource(R.string.sin_pagar),
+                    modifier = Modifier.padding(start = 16.dp))
+            }
             BasicRadioButtonFilter(
                 selectedOption = uiStateFiltro.filtroEstado,
                 onOptionSelected = {
@@ -89,13 +101,15 @@ fun ListaTareasScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(uiStateTarea.listaPalabra) { tarea ->
-                    ItemCard(
-                        tarea = tarea,
-                        listaCategorias = listaCategorias,
-                        onItemModificarClick = onClickModificarTarea,
-                        onClickBorrar = { viewModel.onMostrarDialogoBorrar(tarea) }
-                    )
+                if (uiStateTarea.listaPalabra.isNotEmpty()) {
+                    items(uiStateTarea.listaPalabra) { tarea ->
+                        ItemCard(
+                            tarea = tarea,
+                            listaCategorias = listaCategorias,
+                            onItemModificarClick = onClickModificarTarea,
+                            onClickBorrar = { viewModel.onMostrarDialogoBorrar(tarea) }
+                        )
+                    }
                 }
             }
         }

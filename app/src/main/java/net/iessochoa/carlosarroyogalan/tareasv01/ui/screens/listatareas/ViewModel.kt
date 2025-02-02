@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -19,30 +20,33 @@ import net.iessochoa.carlosarroyogalan.tareasv01.data.tempmodel.TempModelTareas
 
 class ListaTareasViewModel(application: Application): AndroidViewModel(application){
     private val context = application.applicationContext
+    private val _uiStateSinPagar = MutableStateFlow(false)
+    val uiStateSinPagar: StateFlow<Boolean> = _uiStateSinPagar.asStateFlow()
+
     val listaFiltroEstado =
         context.resources.getStringArray(R.array.filtro_estado_tarea).toList()
     val _uiStateFiltro= MutableStateFlow(
         UiStateFiltro(
-            //por defecto todas las tareas
             filtroEstado = listaFiltroEstado[3],
-
             )
     )
-    val uiStatelistaTareas: StateFlow<ListaUiState> = _uiStateFiltro.flatMapLatest {
-            uiStateFiltro ->
-        if (uiStateFiltro.filtroEstado ==listaFiltroEstado[3])//todas
-            Repository.getAllTareas()
-        else
-            Repository.getTareasByEstado(listaFiltroEstado.indexOf(uiStateFiltro.filtroEstado))
-    }.map { listaTareas ->
-        ListaUiState(listaPalabra = listaTareas)
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = ListaUiState())
-
-
+    val uiStatelistaTareas: StateFlow<ListaUiState> = combine(_uiStateFiltro, uiStateSinPagar) { uiStateFiltro, sinPagar ->
+        when {
+            sinPagar -> Repository.getTareasByPayment().map { lista ->
+                lista.filter { it.estado == listaFiltroEstado.indexOf(uiStateFiltro.filtroEstado) }
+            }
+            uiStateFiltro.filtroEstado == listaFiltroEstado[3] -> Repository.getAllTareas()
+            else -> Repository.getTareasByEstado(listaFiltroEstado.indexOf(uiStateFiltro.filtroEstado))
+        }
+    }.flatMapLatest { flowDeListaTareas ->
+        flowDeListaTareas.map { listaTareas ->
+            ListaUiState(listaPalabra = listaTareas)
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ListaUiState()
+    )
 
     private val _uiStateDialogo = MutableStateFlow(UiStateDialogo())
     val uiStateDialogo: StateFlow<UiStateDialogo> = _uiStateDialogo.asStateFlow()
@@ -75,5 +79,8 @@ class ListaTareasViewModel(application: Application): AndroidViewModel(applicati
         _uiStateFiltro.value=_uiStateFiltro.value.copy(
             filtroEstado = nuevoFiltroEstado
         )
+    }
+    fun onCheckedChangeFiltroSinPagar(checked: Boolean) {
+        _uiStateSinPagar.value = checked
     }
 }

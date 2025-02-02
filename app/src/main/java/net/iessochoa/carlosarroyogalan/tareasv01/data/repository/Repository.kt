@@ -22,4 +22,5 @@ object Repository {
     suspend fun getTarea(id:Long)= modelTareas.getTarea(id)
     fun getAllTareas()= modelTareas.getTareas()
     fun getTareasByEstado(estado:Int) = modelTareas.getTareasByEstado(estado)
+    fun getTareasByPayment() = modelTareas.getTareasByPayment()
 }

@@ -25,6 +25,7 @@
     <string name="tareas_database">tareas_database</string>
     <string name="eliminar">Eliminar</string>
     <string name="tarea_eliminada">Tarea eliminada</string>
+    <string name="sin_pagar">Sin pagar</string>
     <string-array name="estado_tarea">
         <item>Abierta</item>
         <item>En Curso</item>
