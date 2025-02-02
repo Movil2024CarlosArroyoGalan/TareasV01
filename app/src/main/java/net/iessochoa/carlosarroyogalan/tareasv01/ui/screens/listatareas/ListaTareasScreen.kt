@@ -69,11 +69,7 @@ fun ListaTareasScreen(
             }
         },
         topBar = {
-            AppBar(
-                tituloPantallaActual = stringResource(R.string.lista_tareas),
-                puedeNavegarAtras = false,
-                navegaAtras = {}
-            )
+            TopBarTareas()
         }
     ) { paddingValues ->
         Column(

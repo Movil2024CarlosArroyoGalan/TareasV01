@@ -26,6 +26,11 @@
     <string name="eliminar">Eliminar</string>
     <string name="tarea_eliminada">Tarea eliminada</string>
     <string name="sin_pagar">Sin pagar</string>
+    <string name="web_del_instituto_ies_severo_ochoa">Web del instituto IES Severo Ochoa</string>
+    <string name="configuraci_n">Configuración</string>
+    <string name="no_se_puedo_hacer_la_llamada">No se puedo hacer la llamada</string>
+    <string name="llamar">Llamar</string>
+    <string name="opciones">Opciones</string>
     <string-array name="estado_tarea">
         <item>Abierta</item>
         <item>En Curso</item>
