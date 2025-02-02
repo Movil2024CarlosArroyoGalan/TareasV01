@@ -31,6 +31,8 @@
     <string name="no_se_puedo_hacer_la_llamada">No se puedo hacer la llamada</string>
     <string name="llamar">Llamar</string>
     <string name="opciones">Opciones</string>
+    <string name="abrir_galeria">Abrir Galeria</string>
+    <string name="abrir_c_mara">Abrir Cámara</string>
     <string-array name="estado_tarea">
         <item>Abierta</item>
         <item>En Curso</item>

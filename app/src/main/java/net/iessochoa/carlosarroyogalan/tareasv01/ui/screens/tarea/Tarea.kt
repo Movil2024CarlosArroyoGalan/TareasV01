@@ -18,8 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -45,6 +47,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import kotlinx.coroutines.launch
 import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.AppBar
@@ -54,7 +59,7 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DynamicSelectText
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.RatingBar
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
 
-
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun TareaScreen(
    viewModel: TareaViewModel = viewModel(),
@@ -67,7 +72,32 @@ fun TareaScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val isTareaNueva = idTarea == null
+    /*
+Permisos:
+ Petición de permisos múltiples condicionales según la versión de Android
+*/
+    val permissionState = rememberMultiplePermissionsState(
+        permissions = mutableListOf(//permiso para hacer fotos
+            android.Manifest.permission.CAMERA
+        ).apply {//Permisos para la galería
+            //Si es Android menor de 10
+            if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.P) {
+                add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                add(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            }//si es Android igual o superior a 13
+            if (android.os.Build.VERSION.SDK_INT >=
+                android.os.Build.VERSION_CODES.TIRAMISU) {
+                add(android.Manifest.permission.READ_MEDIA_IMAGES)
+            }//si es Android igual o superior a 14. Este permiso no lo tengo claro si es necesario
+            //podéis probar en el dispositivo real si tenéis Android 14
+            /*if (android.os.Build.VERSION.SDK_INT >=
+           android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            add(android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED)
+            }*/
+        }
+    )
     idTarea?.let { viewModel.getTarea(it) }
+
     /*
     var categoriaSeleccionada by remember {
         mutableStateOf("")
@@ -163,8 +193,8 @@ fun TareaScreen(
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_launcher_background),
+                    AsyncImage(
+                        model = R.drawable.ic_launcher_background   ,
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
@@ -181,6 +211,24 @@ fun TareaScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(checked = uiStateTarea.pagado,
                         onCheckedChange = { viewModel.onValueChangePagado(it) })
+                    IconButton(
+                        onClick = {
+                            if (!permissionState.allPermissionsGranted)
+                                permissionState.launchMultiplePermissionRequest()
+                        }) {
+                        Icon(painterResource(R.drawable.ic_imagesearch),
+                            contentDescription = stringResource(R.string.abrir_galeria)
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            if (!permissionState.allPermissionsGranted)
+                                permissionState.launchMultiplePermissionRequest()
+                        }) {
+                        Icon(painterResource(R.drawable.ic_camera),
+                            contentDescription = stringResource(R.string.abrir_c_mara)
+                        )
+                    }
                 }
                 Row(modifier = Modifier.padding(8.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(R.string.estado_de_la_tarea))
