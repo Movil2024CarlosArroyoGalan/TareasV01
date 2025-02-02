@@ -35,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.ColorPrioridadAlta
@@ -67,8 +68,11 @@ fun ItemCard(
                 .height(120.dp)
                 .background(cardBackgroundColor)
         ) {
-            Image(
-                painter = painterResource(tarea.img.toInt()),
+            AsyncImage(
+                model = if (tarea.img.isEmpty())
+                    R.drawable.ic_nohayimagen
+                            else
+                                tarea.img,
                 contentDescription = stringResource(R.string.imagen_de_la_tarea),
                 modifier = Modifier
                     .width(100.dp)

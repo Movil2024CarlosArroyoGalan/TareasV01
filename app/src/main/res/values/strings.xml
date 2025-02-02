@@ -33,6 +33,8 @@
     <string name="opciones">Opciones</string>
     <string name="abrir_galeria">Abrir Galeria</string>
     <string name="abrir_c_mara">Abrir Cámara</string>
+    <string name="error_al_cargar_la_imagen">Error al cargar la imagen.</string>
+    <string name="imagen_sin_seleccionar">Imagen sin seleccionar.</string>
     <string-array name="estado_tarea">
         <item>Abierta</item>
         <item>En Curso</item>

@@ -20,6 +20,7 @@ val colorFondo: Color = Color.Transparent,
     val mostrarDialogo: Boolean = false,
     val esTareaNueva: Boolean = true,
     val listaTareas: ArrayList<Tarea> = TempModelTareas.listaTareas,
+    val uriImagen: String = "",
     val snackbarHostState: SnackbarHostState,
     val scope: CoroutineScope,
 )

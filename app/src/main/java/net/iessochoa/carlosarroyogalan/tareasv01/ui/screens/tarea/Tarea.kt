@@ -1,5 +1,9 @@
 package net.iessochoa.carlosarroyogalan.tareasv01.ui.screens.tarea
 
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +51,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.Uri
 import coil3.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -58,6 +63,8 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DialogoDeConfirma
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DynamicSelectTextField
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.RatingBar
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.TareasV01Theme
+import net.iessochoa.carlosarroyogalan.tareasv01.utils.loadFromUri
+import net.iessochoa.carlosarroyogalan.tareasv01.utils.saveBitmapImage
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -96,6 +103,49 @@ Permisos:
             }*/
         }
     )
+    /*
+ Llamada a Galeria versión por encima de Versión 13 en Android. Para usarlo en
+versiones inferiores
+ tenéis incluir el Service de google que aparece en el manifest.xml
+ */
+    val launcherGaleria = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri: android.net.Uri? ->
+            if (uri != null) {
+                try {
+                    uiStateTarea.scope.launch {
+                        val bitmap = loadFromUri(context, uri)
+                        if (bitmap != null) {
+                            val uriImagen = saveBitmapImage(context, bitmap)
+                            viewModel.setUri(uriImagen.toString())
+                        } else {
+                            uiStateTarea.snackbarHostState.showSnackbar(
+                                message = context.getString(R.string.error_al_cargar_la_imagen),
+                                duration = SnackbarDuration.Short
+                            )
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    uiStateTarea.scope.launch {
+                        uiStateTarea.snackbarHostState.showSnackbar(
+                            message = "Error inesperado: ${e.message}",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
+            } else {
+                uiStateTarea.scope.launch {
+                    uiStateTarea.snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.imagen_sin_seleccionar),
+                        duration = SnackbarDuration.Short
+                    )
+                }
+            }
+        }
+    )
+
+
     idTarea?.let { viewModel.getTarea(it) }
 
     /*
@@ -194,7 +244,10 @@ Permisos:
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     AsyncImage(
-                        model = R.drawable.ic_launcher_background   ,
+                        model = if (uiStateTarea.uriImagen.isEmpty())
+                            R.drawable.ic_nohayimagen
+                        else
+                            uiStateTarea.uriImagen,
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
@@ -215,6 +268,12 @@ Permisos:
                         onClick = {
                             if (!permissionState.allPermissionsGranted)
                                 permissionState.launchMultiplePermissionRequest()
+                            else
+                                launcherGaleria.launch(
+                                    PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                    )
+                                )
                         }) {
                         Icon(painterResource(R.drawable.ic_imagesearch),
                             contentDescription = stringResource(R.string.abrir_galeria)
