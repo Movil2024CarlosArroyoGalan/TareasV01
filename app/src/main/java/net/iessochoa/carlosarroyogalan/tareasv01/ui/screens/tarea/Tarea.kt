@@ -1,5 +1,9 @@
 package net.iessochoa.carlosarroyogalan.tareasv01.ui.screens.tarea
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Bitmap
+import android.provider.MediaStore
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -79,6 +83,20 @@ fun TareaScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val isTareaNueva = idTarea == null
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val image = result.data?.extras?.get("data") as? Bitmap
+            if (image != null) {
+                uiStateTarea.scope.launch {
+                    val uriCopia = saveBitmapImage(context, image)
+                    viewModel.setUri(uriCopia.toString())
+                }
+            }
+        }
+    }
+
     /*
 Permisos:
  Petición de permisos múltiples condicionales según la versión de Android
@@ -283,6 +301,10 @@ versiones inferiores
                         onClick = {
                             if (!permissionState.allPermissionsGranted)
                                 permissionState.launchMultiplePermissionRequest()
+                            else{
+                                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                takePictureLauncher.launch(intent)
+                            }
                         }) {
                         Icon(painterResource(R.drawable.ic_camera),
                             contentDescription = stringResource(R.string.abrir_c_mara)
