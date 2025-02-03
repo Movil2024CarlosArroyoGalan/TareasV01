@@ -23,34 +23,42 @@ import net.iessochoa.carlosarroyogalan.tareasv01.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+//Funcion definida para la barra superior para listaTareas
 fun TopBarTareas() {
-    val context = LocalContext.current
-    var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current //Contexto local de la aplicacion
+    var expanded by remember { mutableStateOf(false) } //Estado desplegable para controlar si el menú desplegable está abierto o cerrado
     TopAppBar(
+        //Titulo
         title = {
             Text(text = stringResource(R.string.lista_tareas))
         },
+        //Acciones de la barra superior
         actions = {
+            //Boton que te lleva a la pagina web el IES Severo Ochoa
             IconButton(onClick = {
                 val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse("https://portal.edu.gva.es/03013224/va/inici/"))
                 context.startActivity(intent)
             }) {
+                //Icono de esta misma
                 Icon(
                     painter = painterResource(id = R.drawable.ic_browsepage),
                     contentDescription = stringResource(R.string.web_del_instituto_ies_severo_ochoa)
                 )
             }
+            //Boton que expande el menú del opciones (DropDownMenu)
             IconButton(onClick = { expanded = true }) {
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = stringResource(R.string.opciones)
                 )
             }
+            //Menu que contiene las opciones
             DropdownMenu (
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
+                    //Opción para llamar al telefono del IES Severo Ochoa
                     text = { Text(stringResource(R.string.llamar)) },
                     onClick = {
                         expanded = false
@@ -58,6 +66,7 @@ fun TopBarTareas() {
                         val intent = Intent(Intent.ACTION_CALL).apply {
                             data = android.net.Uri.parse(phoneNumber)
                         }
+                        //En caso de que no pueda hacerlo devolverá un toast avisando de esto
                         try {
                             context.startActivity(intent)
                         } catch (e: SecurityException) {
@@ -67,8 +76,10 @@ fun TopBarTareas() {
                         }
                     }
                 )
+                //Oción de configuración
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.configuraci_n)) },
+                    //En caso de que no pueda devuelve un toast avisando de ello
                     onClick = {
                         expanded = false
                         Toast.makeText(context,

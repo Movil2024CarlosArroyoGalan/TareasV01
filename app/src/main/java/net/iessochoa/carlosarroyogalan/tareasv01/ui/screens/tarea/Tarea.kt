@@ -73,16 +73,21 @@ import net.iessochoa.carlosarroyogalan.tareasv01.utils.saveBitmapImage
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun TareaScreen(
+    //Valores que usaremos en el futuro
    viewModel: TareaViewModel = viewModel(),
    idTarea: Long? = null,
    onVolver: () -> Unit = {},
    onMostrar: () -> Unit = {}
 ) {
+    //Llamada al uiStateTarea por un valor
     val uiStateTarea by viewModel.uiStateTarea.collectAsState()
+    //SnackBarHostState para poder definir el valor de nuestros valores
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+    //Valor para nueva tarea
     val isTareaNueva = idTarea == null
+    //Valor que se usará para que la imagen que tiene guardada esta tarea no se pierda
     val takePictureLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -126,6 +131,7 @@ Permisos:
 versiones inferiores
  tenéis incluir el Service de google que aparece en el manifest.xml
  */
+    //Metodo para que cargue una imagen de la galería lo he modificado respecto a la original debido a que me fallaba
     val launcherGaleria = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri: android.net.Uri? ->
@@ -162,8 +168,7 @@ versiones inferiores
             }
         }
     )
-
-
+    // Si se proporciona un idTarea, obtenemos su información del ViewModel
     idTarea?.let { viewModel.getTarea(it) }
 
     /*
@@ -219,6 +224,7 @@ versiones inferiores
         },
         topBar ={
             AppBar(
+                //Distincion en caso de que en la lista hayas elegido crear una tarea nueva o modificar tarea
                 tituloPantallaActual =
                 if (uiStateTarea.esTareaNueva)
                     stringResource(R.string.tarea_nueva)
@@ -239,6 +245,7 @@ versiones inferiores
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
             ) {
+                // Sección de selección de categoría y prioridad junto con imagen
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -247,12 +254,14 @@ versiones inferiores
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
+                        //Lista de categoría
                         DynamicSelectTextField (
                             selectedValue = uiStateTarea.categoria,
                             options = viewModel.listaCategory,
                             label = stringResource(R.string.categorias),
                             onSelectionChanged = { viewModel.onValueChangeCategoria(it) },
                         )
+                        //Lista de prioridades
                         DynamicSelectTextField (
                             selectedValue = uiStateTarea.prioridad,
                             options = viewModel.listaPrioridad,
@@ -261,6 +270,7 @@ versiones inferiores
                         )
                     }
                     Spacer(modifier = Modifier.width(8.dp))
+                    //Imagen que saldrá, si está vacia ya hay una imagen definida vacía, si no agarras la que hay
                     AsyncImage(
                         model = if (uiStateTarea.uriImagen.isEmpty())
                             R.drawable.ic_nohayimagen
@@ -275,13 +285,16 @@ versiones inferiores
                     )
                 }
                 Row(modifier = Modifier.padding(8.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
+                    //Valoracion
                     Icon(painter = if (uiStateTarea.pagado) painterResource(R.drawable.ic_pagado)
                     else painterResource(R.drawable.ic_no_pagado), contentDescription = null)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(stringResource(R.string.pagado))
+                    //Switch pagado
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(checked = uiStateTarea.pagado,
                         onCheckedChange = { viewModel.onValueChangePagado(it) })
+                    //Boton para importar imagen de galería
                     IconButton(
                         onClick = {
                             if (!permissionState.allPermissionsGranted)
@@ -297,6 +310,7 @@ versiones inferiores
                             contentDescription = stringResource(R.string.abrir_galeria)
                         )
                     }
+                    //Boton para hacer foto con la cámara y guardar la imagen
                     IconButton(
                         onClick = {
                             if (!permissionState.allPermissionsGranted)
@@ -311,6 +325,7 @@ versiones inferiores
                         )
                     }
                 }
+                //Clasificación de la tarea, en caso de que sea X taréa se le definirá X icono
                 Row(modifier = Modifier.padding(8.dp, 0.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(R.string.estado_de_la_tarea))
                     Spacer(modifier = Modifier.width(8.dp))
@@ -329,11 +344,14 @@ versiones inferiores
                         }
                     }
                 }
+                //Estados
                 BasicRadioButton(selectedOption = uiStateTarea.estado, onOptionSelected = { viewModel.onValueChangeEstado(it) }, options = viewModel.listaEstados)
+                //Valoración del cliente, RatingBar para cambiar la valoracion
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(text = stringResource(R.string.valoracion_cliente))
                     RatingBar (uiStateTarea.valoracion, onRatingChanged = { viewModel.onValueChangeValoracion(it)})
                 }
+                //Campo para insertar el nombre del técnico
                 OutlinedTextField(
                     value = uiStateTarea.tecnico,
                     onValueChange = { viewModel.onValueChangeTecnico(it)},
@@ -342,20 +360,22 @@ versiones inferiores
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
                 )
+                //Descripción, desplazamiento vertical en caso de que el texto sea largo
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)) {
                     OutlinedTextField(
-                        value = uiStateTarea.descripcion,
+                        value = uiStateTarea.descripcion, //Campo descripción definido en uiStateTarea
                         onValueChange = { viewModel.onValueChangeDescripcion(it)},
                         label = { Text(stringResource(R.string.descripcion)) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .verticalScroll(rememberScrollState()),
+                            .verticalScroll(rememberScrollState()), //Scroll lateral ya mencionado
                         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                         singleLine = false
                     )
                 }
+                //Dialogo de confirmación para guardar los cambios
                 Box(modifier = Modifier){
                     if (uiStateTarea.mostrarDialogo) {
                         DialogoDeConfirmacion(
@@ -364,7 +384,7 @@ versiones inferiores
                                 viewModel.onCancelarDialogoGuardar()
                             },
                             onConfirmation = {
-                                //guardaría los cambios
+                                //guardaría los cambios, muestra un snackBar de confirmacion
                                 viewModel.onConfirmarDialogoGuardar()
                                 uiStateTarea.scope.launch {
                                     uiStateTarea.snackbarHostState.showSnackbar(
@@ -378,11 +398,12 @@ versiones inferiores
                             icon = Icons.Default.Info
                         )
                     }
+                    //En caso de que no sea una nueva tarea, muestra el boton para verla
                     if (!isTareaNueva){
                         Spacer(modifier = Modifier.width(16.dp))
                         Button(
                             onClick = onMostrar,
-                            enabled = uiStateTarea.listaTareas.isNotEmpty()
+                            enabled = uiStateTarea.listaTareas.isNotEmpty() //Habilitado si no hay tareas disponibles
                         ) {
                             Text(stringResource(R.string.ver_tarea))
                         }

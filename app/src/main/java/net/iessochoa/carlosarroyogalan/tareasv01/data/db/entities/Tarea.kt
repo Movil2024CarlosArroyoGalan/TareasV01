@@ -6,15 +6,15 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "tareas")
 data class Tarea(
     @PrimaryKey(autoGenerate = true)
-    var id:Long?=null,
+    var id:Long?=null, //ID autogenerada
     val categoria:Int,
     val prioridad:Int,
-    val img:String,
-    val pagado:Boolean,
-    val estado:Int,
-    val valoracionCliente:Int,
-    val tecnico:String,
-    val descripcion:String
+    val img:String, //Ruta de la imagen
+    val pagado:Boolean, //Indicacion si está pagadao
+    val estado:Int, //Estado de la tarea
+    val valoracionCliente:Int, //Valoración del cliente
+    val tecnico:String, //Tecnico
+    val descripcion:String //Descripcion
 ) {
     companion object {
         var idContador = 1L//iniciamos contador de tareas
@@ -22,9 +22,11 @@ data class Tarea(
             return idContador++//sumamos uno al contador
         }
     }
+    //Sobrescribe el método equals para comparar tareas por id
     override fun equals(other: Any?): Boolean {
         return (other is Tarea)&&(this.id == other?.id)
     }
+    //Constructor secundario para almacenar manualmente el ID
     constructor(
         categoria:Int,
         prioridad:Int,

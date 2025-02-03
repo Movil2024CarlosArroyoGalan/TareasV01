@@ -9,7 +9,7 @@ object ListaTareasDestino
 data class TareaDestino(val desTarea: Long? = null)
 @Serializable
 data class VistaTareasDestino(val desTarea: Long? = null)
-
+//Definición de las rutas de navegacion
 const val LISTA_TAREAS_RUTA = "lista_tareas"
 const val TAREA_RUTA = "tarea"
 const val VISTA_TAREA_ROUTE = "vista_tarea"

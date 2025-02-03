@@ -42,14 +42,16 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.AppBar
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.BasicRadioButton
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.BasicRadioButtonFilter
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.components.DialogoDeConfirmacion
-
+//Screen principal
 @Composable
 fun ListaTareasScreen(
     viewModel: ListaTareasViewModel = viewModel(),
+    //Funciones, creacion de nueva tarea y modificacion de las ya existentes
     onClickNuevaTarea: () -> Unit = {},
     onClickModificarTarea: (pos: Long?) -> Unit = {},
     onClickVerTarea: (pos: Long?) -> Unit = {}
 ) {
+    //Valores definidos, funciones llamadas de viewModel que usaremos
     val uiStateTarea by viewModel.uiStatelistaTareas.collectAsState()
     val context = LocalContext.current
     val listaCategorias = context.resources.getStringArray(R.array.categoria).toList()
@@ -59,6 +61,7 @@ fun ListaTareasScreen(
     val sinPagarState by viewModel.uiStateSinPagar.collectAsState()
     Scaffold(
         floatingActionButton = {
+            //Icono para añadir una tarea
             FloatingActionButton(
                 onClick = onClickNuevaTarea
             ) {
@@ -68,6 +71,7 @@ fun ListaTareasScreen(
                 )
             }
         },
+        //TopBar, creado en otra clase, esta contiene el titulo y las otras funciones propuestas en la practica anterior
         topBar = {
             TopBarTareas()
         }
@@ -80,13 +84,16 @@ fun ListaTareasScreen(
             Row (
                 verticalAlignment = Alignment.CenterVertically
             ){
+                //Switch para el filtro sin pagar
                 Switch(
                     checked = sinPagarState,
+                    //Llamada al metodo definido
                     onCheckedChange = {viewModel.onCheckedChangeFiltroSinPagar(it)}
                 )
                 Text(text = stringResource(R.string.sin_pagar),
                     modifier = Modifier.padding(start = 16.dp))
             }
+            //Filtro de las tareas
             BasicRadioButtonFilter(
                 selectedOption = uiStateFiltro.filtroEstado,
                 onOptionSelected = {
@@ -97,6 +104,7 @@ fun ListaTareasScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
+                //Item card con todas las listas
                 if (uiStateTarea.listaPalabra.isNotEmpty()) {
                     items(uiStateTarea.listaPalabra) { tarea ->
                         ItemCard(
@@ -109,6 +117,7 @@ fun ListaTareasScreen(
                 }
             }
         }
+        //Dialogo que se mostrará en caso de querer borrar una tarea
         if (dialogoState.mostrarDialogoBorrar) {
             DialogoDeConfirmacion(
                 onDismissRequest = {

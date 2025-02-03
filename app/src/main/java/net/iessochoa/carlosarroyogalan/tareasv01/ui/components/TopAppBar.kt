@@ -11,7 +11,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import net.iessochoa.carlosarroyogalan.tareasv01.R
 
 /**
  * Composable que define la barra de navegación superior de la app
@@ -22,27 +24,28 @@ import androidx.compose.ui.tooling.preview.Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
+    //Titulo de la barra
     tituloPantallaActual: String,
+    //Nagevación hacia atras
     puedeNavegarAtras: Boolean,
+    //Funcion para que pueda navegar hacia atras
     navegaAtras: () -> Unit={},
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
         //Recuperamos el título del enum AppScreen
         title = { Text(text = tituloPantallaActual) },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
         modifier = modifier,
+        //Fecha de retroceso
         navigationIcon = {
             //si es la primera pantalla no se muestra el botón de navegación
             if (puedeNavegarAtras) {
                 //lambda que iría a la pantalla anterior
-                IconButton(onClick = navegaAtras) {
+                IconButton(onClick = navegaAtras) { //Al clickar ejecuta la opción de navegación al contrario
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         //recuerda que el texto tiene que ir en string.xml
-                        contentDescription = "Ir atrás"
+                        contentDescription = stringResource(R.string.volver) //Descripción
                     )
                 }
             }

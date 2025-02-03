@@ -42,23 +42,31 @@ import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.ColorPrioridadAlta
 
 @Composable
 fun ItemCard(
+    //Recibe una tarea como parámetro
     tarea: Tarea,
+    //Lista de categorías
     listaCategorias: List<String> = emptyList(),
+    // Función de callback para modificar una tarea
     onItemModificarClick: (id: Long) -> Unit,
+    // Función opcional para borrar una tarea
     onClickBorrar: (Long) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    //Color de fondo en caso de que la prioridad de la tarea  sea alta
     val cardBackgroundColor = if (tarea.prioridad == 2) {
         ColorPrioridadAlta
     } else {
         Color.Transparent
     }
+    //Estado para manejar la expansion del contenido
     var expanded by remember { mutableStateOf(false)}
+    //Tarjeta con bordes redondeados
     Card (
         shape = RoundedCornerShape(8.dp),
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
+            //Click para modificar la tarea
             .clickable { tarea.id?.let { onItemModificarClick(it) } },
         elevation = androidx.compose.material3.CardDefaults.cardElevation(4.dp)
     ) {
@@ -68,10 +76,13 @@ fun ItemCard(
                 .height(120.dp)
                 .background(cardBackgroundColor)
         ) {
+            //Imagen de la tarea, predeterminada en caso de que no haya una definida
             AsyncImage(
                 model = if (tarea.img.isEmpty())
+                    //Imagen por defecto
                     R.drawable.ic_nohayimagen
                             else
+                                //Imagen de la tarea
                                 tarea.img,
                 contentDescription = stringResource(R.string.imagen_de_la_tarea),
                 modifier = Modifier
@@ -80,6 +91,7 @@ fun ItemCard(
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.width(8.dp))
+            //Contenido de la tarjeta
             Column (
                 modifier = Modifier
                     .fillMaxHeight()
@@ -90,6 +102,7 @@ fun ItemCard(
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
+                    //Icono, representa el estado de la tarea
                     Icon(
                         painter = painterResource(
                             id = when (tarea.estado) {
@@ -101,6 +114,7 @@ fun ItemCard(
                         ),
                         contentDescription = stringResource(R.string.estado_de_la_tarea)
                     )
+                    //Muestra la categoría de la tarea, si no existe lo avisa igualmente
                     Text(
                         text = listaCategorias.getOrNull(tarea.categoria) ?: stringResource(R.string.sin_categor_a),
                         style = MaterialTheme.typography.labelMedium,
@@ -108,12 +122,13 @@ fun ItemCard(
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }
+                //Muestra el nombre del técnico
                 Text(
                     text = tarea.tecnico,
                     style = MaterialTheme.typography.labelLarge,
                     color = Color.Blue
                 )
-
+                //Descripción de la tarea
                 Row(modifier = modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically){
                     if(!expanded){
@@ -127,6 +142,7 @@ fun ItemCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     } else {
+                        //Si está expandido muestra todo sin limitaciones
                         Text(
                             text = tarea.descripcion,
                             modifier = Modifier
@@ -136,6 +152,7 @@ fun ItemCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
+                    //Boton para expandir o contraer el item
                     ExpandirItem(
                         expanded = expanded,
                         onIconClick = { expanded = !expanded },
@@ -150,9 +167,11 @@ fun ItemCard(
                 horizontalAlignment = Alignment.End,
                 verticalArrangement = Arrangement.Top
             ){
+                //Boton de eliminación de tarea
                 IconButton(
-                    onClick = {tarea.id?.let {onClickBorrar(it)}}
+                    onClick = {tarea.id?.let {onClickBorrar(it)}} //Llama a la funcion para borrar la tarea
                 ) {
+                    //Icono para eliminar la tarea
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = stringResource(R.string.eliminar)
@@ -176,19 +195,24 @@ fun ItemCard(
         }
     }
 }
+//Metodo que usamos para expandir la descripción del item
 @Composable
 fun ExpandirItem(
-    expanded: Boolean,
-    onIconClick: () -> Unit,
+    expanded: Boolean, //Estado del item
+    onIconClick: () -> Unit, //Accion para ejecutar la expansion
     modifier: Modifier
 ) {
+    //Boton que responde al clic, con el modificador como parámetro
     IconButton(onClick = onIconClick, modifier = modifier) {
+        //Icono de expansión
         Icon(
             Icons.Filled.KeyboardArrowDown,
             stringResource(R.string.expandir),
             Modifier.rotate(
+                //Si el icono está sin pulsar se queda como está
                 if (expanded)
                     180f
+                //Si no, se rota
                 else
                     360f
             )

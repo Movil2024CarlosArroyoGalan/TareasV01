@@ -11,9 +11,10 @@ import net.iessochoa.carlosarroyogalan.tareasv01.R
 import net.iessochoa.carlosarroyogalan.tareasv01.data.db.dao.TareasDao
 import net.iessochoa.carlosarroyogalan.tareasv01.data.db.entities.Tarea
 import kotlin.random.Random
-
+//
 @Database(entities = [Tarea::class], version = 1, exportSchema = false)
 public abstract class TareasDataBase : RoomDatabase() {
+    //Metodo abstracto que devuelve el DAO a la base de datos
     abstract fun tareasDao(): TareasDao
     companion object {
         // Singleton prevents multiple instances of database opening at the
@@ -29,7 +30,7 @@ public abstract class TareasDataBase : RoomDatabase() {
                     TareasDataBase::class.java,
                     "tareas_database"
                 )
-                    .addCallback(InicioDbCallback())
+                    .addCallback(InicioDbCallback()) //Inicia la base de datos
                     .build()
                 INSTANCE = instance
                 // return instance
@@ -46,7 +47,7 @@ public abstract class TareasDataBase : RoomDatabase() {
             super.onCreate(db)
             INSTANCE?.let { database ->
                 GlobalScope.launch {
-                    cargarDatabase(database.tareasDao())
+                    cargarDatabase(database.tareasDao()) //Carga los datos de ejemplo
                 }
             }
         }
@@ -63,19 +64,20 @@ public abstract class TareasDataBase : RoomDatabase() {
             val fotos =
                 listOf(R.drawable.foto1, R.drawable.foto2, R.drawable.foto3,
                     R.drawable.foto4)
+            //Creación de 10 tareas con valores aleatorios
             lateinit var tarea: Tarea
             (1..10).forEach {
                 tarea = Tarea(
                     (0..4).random(),
                     (0..2).random(),
-                    img = "",
+                    img = "", //No se asigna imagen por defecto
                     Random.nextBoolean(),
                     (0..2).random(),
                     (0..5).random(),
                     tecnicos.random(),
                     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris consequat ligula et vehicula mattis. \n Etiam tristique ornare lacinia. \nVestibulum lacus magna, dignissim et tempor id, convallis sed augue"
                 )
-                tareasDao.addTarea(tarea)
+                tareasDao.addTarea(tarea) //Guarda cada tarea en la BD
             }
         }
     }

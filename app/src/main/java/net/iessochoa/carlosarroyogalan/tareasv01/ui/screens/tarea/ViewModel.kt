@@ -16,13 +16,17 @@ import net.iessochoa.carlosarroyogalan.tareasv01.data.repository.Repository
 import net.iessochoa.carlosarroyogalan.tareasv01.ui.theme.ColorPrioridadAlta
 
 class TareaViewModel(application: Application): AndroidViewModel(application) {
+    //Contexto de la aplicacion heredado de application
     private val context = application.applicationContext
+    //Opciones, obtenidas desde los recursos xml
     val listaPrioridad = context.resources.getStringArray(R.array.prioridad)
     val listaCategory = context.resources.getStringArray(R.array.categoria)
     val listaEstados = context.resources.getStringArray(R.array.estado_tarea)
+    //Constante de prioridad alta
     private val PRIORIDAD_ALTA = listaPrioridad[2]
+    //Objeto de tarea, null en caso de no haberse asignado
     var tarea: Tarea? = null
-
+    //Mutable state que contiene la informacion de la tarea, se inicializa todo
     private val _uiStateTarea = MutableStateFlow(
         UiStateTarea(
             categoria = listaCategory[0],
@@ -38,12 +42,13 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
             scope = viewModelScope
         )
     )
+    //Estado de la tarea desde la uiState
     val uiStateTarea: StateFlow<UiStateTarea> = _uiStateTarea.asStateFlow()
-
+    //Actualizacion de la categoría de la tarea
     fun onValueChangeCategoria(nuevaCategoria: String) {
         _uiStateTarea.value = _uiStateTarea.value.copy(categoria = nuevaCategoria)
     }
-
+    //Actualizacion de la prioridad de la tarea
     fun onValueChangePrioridad(nuevaPrioridad: String) {
         val colorFondo = if (PRIORIDAD_ALTA == nuevaPrioridad) ColorPrioridadAlta else Color.Transparent
         _uiStateTarea.value = _uiStateTarea.value.copy(
@@ -51,35 +56,37 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
             colorFondo = colorFondo
         )
     }
-
+    //Actualizacion de el pago de la tarea
     fun onValueChangePagado(pagado: Boolean) {
         _uiStateTarea.value = _uiStateTarea.value.copy(pagado = pagado)
     }
-
+    //Actualizacion de el estado de la tarea
     fun onValueChangeEstado(nuevoEstado: String) {
         _uiStateTarea.value = _uiStateTarea.value.copy(estado = nuevoEstado)
     }
-
+    //Actualizacion de la valoracion de la tarea
     fun onValueChangeValoracion(nuevaValoracion: Int) {
         _uiStateTarea.value = _uiStateTarea.value.copy(valoracion = nuevaValoracion)
     }
-
+    //Actualizacion de el técnico de la tarea
     fun onValueChangeTecnico(nuevoTecnico: String) {
         _uiStateTarea.value = _uiStateTarea.value.copy(
             tecnico = nuevoTecnico,
             esFormularioValido = nuevoTecnico.isNotBlank() && _uiStateTarea.value.tecnico.isNotBlank())
     }
-
+    //Actualizacion de la descripcion de la tarea
     fun onValueChangeDescripcion(nuevaDescripcion: String) {
         _uiStateTarea.value = _uiStateTarea.value.copy(
             descripcion = nuevaDescripcion,
             esFormularioValido = nuevaDescripcion.isNotBlank() && _uiStateTarea.value.descripcion.isNotBlank())
     }
+    //Actualizacion de la guardar la tarea completa de la tarea
     fun onGuardar() {
         _uiStateTarea.value = _uiStateTarea.value.copy(
             mostrarDialogo = true
         )
     }
+    //Confirmacion de el guardado de la tarea
     fun onConfirmarDialogoGuardar() {
         //cierra el dialogo
         _uiStateTarea.value = _uiStateTarea.value.copy(
@@ -90,6 +97,7 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
             Repository.addTarea(uiStateToTarea())
         }
     }
+    //Cancelacion del guardado de la tarea
     fun onCancelarDialogoGuardar() {
         _uiStateTarea.value = _uiStateTarea.value.copy(
             mostrarDialogo = false
@@ -99,6 +107,7 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
      *Carga los datos de la tarea en UiState,
      * que a su vez actualiza la interfaz de usuario *
      */
+    //Actualiza toda la interfaz
     fun tareaToUiState(tarea: Tarea) {
         _uiStateTarea.value = _uiStateTarea.value.copy(
             categoria = listaCategory[tarea.categoria],
@@ -117,9 +126,11 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
         )
     }
     fun uiStateToTarea(): Tarea {
+        //Asigna un id autogenerado
         return if (uiStateTarea.value.esTareaNueva)
         //si es nueva, le asigna un id
             Tarea(
+                //Valores de UIstate buscando los indices correctos
                 categoria = listaCategory.indexOf(uiStateTarea.value.categoria),
                 prioridad = listaPrioridad.indexOf(uiStateTarea.value.prioridad),
                 img = uiStateTarea.value.uriImagen,
@@ -128,7 +139,8 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
                 valoracionCliente = uiStateTarea.value.valoracion,
                 tecnico = uiStateTarea.value.tecnico,
                 descripcion = uiStateTarea.value.descripcion
-            ) //si no es nueva, actualiza la tarea
+            )
+        //si no es nueva, actualiza la tarea
         else Tarea(
             tarea!!.id,
             categoria = listaCategory.indexOf(uiStateTarea.value.categoria),
@@ -141,11 +153,13 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
             descripcion = uiStateTarea.value.descripcion
         )
     }
+    //Actualiza la URI de la imagen de la tarea
     fun setUri(uri: String){
         _uiStateTarea.value = _uiStateTarea.value.copy(
             uriImagen = uri
         )
     }
+    //Obtiene la tarea desde la base de datos a partir de su Id
     fun getTarea(id: Long) {
         //lanzamos una corrutina que nos devuelve la tarea de la bd
         viewModelScope.launch (Dispatchers.IO) {
@@ -153,10 +167,5 @@ class TareaViewModel(application: Application): AndroidViewModel(application) {
             if (tarea != null) tareaToUiState(tarea!!)
         }
     }
-
-
-
-
-
 }
 

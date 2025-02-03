@@ -10,11 +10,12 @@ object TempModelTareas {
     //lista de tareas
     val listaTareas = ArrayList<Tarea>()
     //StateFlow observable
-    private val _tareasStateFlow =
-        MutableStateFlow<List<Tarea>>(listaTareas)
+    private val _tareasStateFlow = MutableStateFlow<List<Tarea>>(listaTareas)
+    //Obtiene todas las tareas con un Flow
     fun getAllTareas(): Flow<List<Tarea>> {
         return _tareasStateFlow
     }
+    //Agrega una tarea una o actualiza la que ya existe
     fun addTarea(tarea: Tarea) {
         val pos = listaTareas.indexOf(tarea)
         if (pos < 0) {
@@ -24,13 +25,16 @@ object TempModelTareas {
         }
         _tareasStateFlow.value = listaTareas
     }
+    //Borra la tarea
     fun delTarea(tarea: Tarea) {
         listaTareas.remove(tarea)
         _tareasStateFlow.value = listaTareas
     }
+    //Obtiene la tarea a partir de su id
     fun getTarea(id: Long): Tarea? {
         return listaTareas.find { it.id == id }
     }
+    //Inicia el modelo con tareas de prueba
     fun iniciaPruebaTareas() {
         val tecnicos = listOf(
             "Pepe Gotero",
@@ -63,6 +67,4 @@ object TempModelTareas {
         //this.application= context.applicationContext as Application
         iniciaPruebaTareas()
     }
-
-
 }
